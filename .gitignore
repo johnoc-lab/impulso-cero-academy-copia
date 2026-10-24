@@ -1,0 +1,13 @@
+# dependencias (se reinstalan con npm install)
+node_modules
+
+# build (Vercel lo genera solo)
+dist
+
+# cache de typescript
+*.tsbuildinfo
+
+# entorno / editor
+.env
+.env.local
+.DS_Store

@@ -1,0 +1,242 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: #f7f4ee;
+  color: #2c3159;
+  overflow-x: hidden;
+}
+
+.display {
+  font-family: 'Geoform', 'Montserrat', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  line-height: 0.98;
+}
+
+/* Entrada del hero */
+@keyframes impFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.anim-up {
+  opacity: 0;
+  animation: impFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Órbitas (elemento gráfico 3.5 del manual) */
+@keyframes orbitSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.orbit-spin {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: orbitSpin 40s linear infinite;
+}
+.orbit-spin-rev {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: orbitSpin 60s linear infinite reverse;
+}
+
+/* Cohete flotando */
+@keyframes rocketFloat {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(8px, -14px);
+  }
+}
+.rocket-float {
+  animation: rocketFloat 5s ease-in-out infinite;
+}
+
+/* Chips flotantes del hero */
+@keyframes chipFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.chip-float {
+  animation: chipFloat 6s ease-in-out infinite;
+}
+
+/* Marquee */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  animation: marquee 28s linear infinite;
+}
+
+/* Pulso del botón de WhatsApp */
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+.wa-ping {
+  animation: ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .anim-up {
+    animation: none;
+    opacity: 1;
+  }
+  .orbit-spin,
+  .orbit-spin-rev,
+  .rocket-float,
+  .chip-float,
+  .marquee-track,
+  .wa-ping {
+    animation: none;
+  }
+}
+
+
+/* Pulido visual: profundidad, ritmo y estados accesibles */
+:root {
+  color-scheme: light;
+  --impulse-navy: #2c3159;
+  --impulse-orange: #d78133;
+  --impulse-paper: #f7f4ee;
+}
+
+::selection {
+  background: rgba(215, 129, 51, 0.28);
+  color: #171a33;
+}
+
+:focus-visible {
+  outline: 3px solid #e39555;
+  outline-offset: 4px;
+}
+
+.hero-shell {
+  isolation: isolate;
+  background-image: linear-gradient(135deg, #292e55 0%, #2c3159 48%, #38344f 100%);
+}
+
+.hero-shell::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 77% 42%, rgba(215, 129, 51, 0.18), transparent 34%),
+    radial-gradient(ellipse at 14% 88%, rgba(185, 193, 204, 0.12), transparent 34%);
+}
+
+.hero-shell::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+  opacity: 0.19;
+  background-image: linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 45%, #000 100%);
+}
+
+.hero-title {
+  text-wrap: balance;
+  letter-spacing: -0.045em;
+  line-height: 0.91;
+  text-shadow: 0 5px 28px rgba(12, 15, 38, 0.12);
+}
+
+.hero-art {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 28px 48px rgba(12, 15, 38, 0.16));
+}
+
+.hero-content {
+  z-index: 1;
+}
+
+/* Interacciones consistentes sin convertir cada elemento en una tarjeta */
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a {
+  touch-action: manipulation;
+}
+
+section[id] {
+  scroll-margin-top: 82px;
+}
+
+@media (min-width: 1024px) {
+  .hero-content {
+    padding-top: 7.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-title {
+    font-size: clamp(2.85rem, 13.4vw, 4rem);
+    line-height: 0.94;
+  }
+  .hero-shell::after {
+    background-size: 40px 40px;
+    opacity: 0.12;
+  }
+  .chip-float {
+    max-width: 78%;
+    white-space: nowrap;
+    font-size: 11px;
+    padding: 0.45rem 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
