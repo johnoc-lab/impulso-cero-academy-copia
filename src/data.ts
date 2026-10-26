@@ -29,7 +29,16 @@ export const PONENTE = {
   img: '/flyer-taller1.png',
 };
 
-export const ALIADOS = ['La Base Cowork', 'Égida Jurídica', 'Finacorp'];
+export type Aliado = {
+  nombre: string;
+  logo?: string; // URL del logotipo; mientras no exista, se muestra el nombre.
+};
+
+export const ALIADOS: Aliado[] = [
+  { nombre: 'La Base Cowork' },
+  { nombre: 'Égida Jurídica' },
+  { nombre: 'Finacorp' },
+];
 
 export const NAV = [
   { label: 'Ruta', href: '#ruta' },
@@ -85,6 +94,8 @@ export const RUTA: { n: string; t: string; d: string; Icon: LucideIcon }[] = [
 
 export type Taller = {
   num: string;
+  label: string;
+  ctaLabel: string;
   clave: string; // palabra gigante
   dateShort: string; // "05 SET"
   day: string; // "Viernes 05 de Setiembre"
@@ -97,6 +108,8 @@ export type Taller = {
 export const TALLERES: Taller[] = [
   {
     num: '01',
+    label: 'Taller 01',
+    ctaLabel: 'Reservar este taller',
     clave: 'CRECE',
     dateShort: '05 SET',
     day: 'Viernes 05 de Setiembre',
@@ -107,6 +120,8 @@ export const TALLERES: Taller[] = [
   },
   {
     num: '02',
+    label: 'Taller 02',
+    ctaLabel: 'Reservar este taller',
     clave: 'ESCALA',
     dateShort: '12 SET',
     day: 'Viernes 12 de Setiembre',
@@ -117,6 +132,8 @@ export const TALLERES: Taller[] = [
   },
   {
     num: '03',
+    label: 'Taller 03',
+    ctaLabel: 'Reservar este taller',
     clave: 'AUTOMATIZA',
     dateShort: '19 SET',
     day: 'Viernes 19 de Setiembre',
@@ -127,6 +144,8 @@ export const TALLERES: Taller[] = [
   },
   {
     num: '04',
+    label: 'Taller 04',
+    ctaLabel: 'Reservar este taller',
     clave: 'PROTEGE',
     dateShort: '26 SET',
     day: 'Viernes 26 de Setiembre',

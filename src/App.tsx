@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { AnimatePresence, motion, useScroll, useTransform } from 'motion/react';
+import { animate, AnimatePresence, motion, useMotionValue, useReducedMotion, useScroll, useTransform } from 'motion/react';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -17,6 +17,8 @@ import {
   X,
   Target,
   Eye,
+  Pause,
+  Play,
 } from 'lucide-react';
 import Intro from './Intro';
 import { Orbits, Kicker } from './Orbits';
@@ -34,6 +36,7 @@ import {
   ESENCIA,
   FAQ,
   waLink,
+  type Aliado,
 } from './data';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -496,13 +499,13 @@ function Talleres({
             <AnimatePresence mode="wait">
               <motion.div
                 key={t.num}
-                className="absolute inset-0 flex flex-col justify-between p-8 md:p-10"
+                className="relative flex min-h-[420px] flex-col justify-between gap-8 p-8 md:p-10"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -30 }}
                 transition={{ duration: 0.55, ease: EASE }}
               >
-                <span className="display pointer-events-none absolute -bottom-4 -right-3 select-none text-[5.5rem] font-black uppercase leading-none text-white/25 md:text-[7.5rem]">
+                <span aria-hidden="true" className="display pointer-events-none absolute -bottom-4 -right-3 select-none text-[5.5rem] font-black uppercase leading-none text-white/25 md:text-[7.5rem]">
                   {t.clave}
                 </span>
                 <div className="flex items-start justify-between">
@@ -515,14 +518,14 @@ function Talleres({
                   </span>
                 </div>
                 <div className="relative">
-                  <div className="text-[13px] font-bold uppercase tracking-widest">Taller {t.num} · {t.time}</div>
+                  <div className="text-[13px] font-bold uppercase tracking-widest">{t.label} · {t.time}</div>
                   <h3 className="mt-3 text-[1.7rem] font-extrabold leading-tight md:text-[2rem]">{t.title}</h3>
                   <p className="mt-3 max-w-[380px] text-[15px] font-medium text-azul-ink/80">{t.desc}</p>
                   <button
-                    onClick={() => onReservar(`Taller ${t.num}: ${t.title}`)}
+                    onClick={() => onReservar(`${t.label}: ${t.title}`)}
                     className="mt-6 inline-flex items-center gap-2 rounded-full bg-azul px-6 py-3.5 text-[15px] font-bold text-white transition hover:-translate-y-0.5 hover:bg-azul-ink"
                   >
-                    Reservar este taller <ArrowRight size={17} />
+                    {t.ctaLabel} <ArrowRight size={17} />
                   </button>
                 </div>
               </motion.div>
@@ -553,10 +556,11 @@ function Talleres({
               return (
                 <button
                   key={item.num}
+                  aria-pressed={on}
                   onClick={() => setActive(i)}
                   onFocus={() => setActive(i)}
-                  className={`relative block w-full border-b border-white/10 px-6 py-6 text-left transition-colors last:border-b-0 md:px-8 md:py-7 ${
-                    on ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
+                  className={`relative block w-full border-b border-white/10 px-6 py-6 text-left transition-[background-color,transform] duration-200 last:border-b-0 motion-reduce:transform-none md:px-8 md:py-7 ${
+                    on ? 'bg-white/[0.06]' : 'hover:translate-x-1 hover:bg-white/[0.03]'
                   }`}
                 >
                   {on && <motion.span layoutId="taller-bar" className="absolute inset-y-0 left-0 w-1 bg-naranja" />}
@@ -753,18 +757,104 @@ function Nosotros() {
         </div>
 
         {/* Aliados */}
-        <div className="mt-16 flex flex-col items-center gap-5 border-t border-white/10 pt-10 md:flex-row md:justify-between">
-          <span className="text-[13px] font-bold uppercase tracking-[0.2em] text-white/50">Con el respaldo de</span>
-          <div className="flex flex-wrap justify-center gap-3">
-            {ALIADOS.map((a) => (
-              <span key={a} className="rounded-full border border-white/15 px-5 py-2.5 text-[15px] font-semibold text-white/85">
-                {a}
-              </span>
-            ))}
-          </div>
-        </div>
+        <AliadosMarquee aliados={ALIADOS} />
       </div>
     </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* ALIADOS — dos grupos iguales mantienen el bucle sin saltos            */
+/* ------------------------------------------------------------------ */
+function AliadosMarquee({ aliados }: { aliados: Aliado[] }) {
+  const reduceMotion = useReducedMotion();
+  const x = useMotionValue('0%');
+  const animation = useRef<ReturnType<typeof animate> | null>(null);
+  const [paused, setPaused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const canAnimate = aliados.length > 1 && !reduceMotion;
+
+  useEffect(() => {
+    x.set('0%');
+    if (!canAnimate) return;
+
+    const controls = animate(x, ['0%', '-50%'], {
+      duration: Math.max(18, aliados.length * 6),
+      repeat: Infinity,
+      ease: 'linear',
+    });
+    animation.current = controls;
+    return () => {
+      controls.stop();
+      animation.current = null;
+    };
+  }, [x, canAnimate, aliados.length]);
+
+  useEffect(() => {
+    if (paused || hovered || focused) animation.current?.pause();
+    else animation.current?.play();
+  }, [paused, hovered, focused, canAnimate, aliados.length]);
+
+  if (aliados.length === 0) return null;
+
+  return (
+    <div
+      role="region"
+      aria-label="Marcas que nos respaldan"
+      className="mt-16 flex min-w-0 flex-col gap-5 border-t border-white/10 pt-10 md:flex-row md:items-center"
+    >
+      <div className="flex shrink-0 items-center justify-between gap-4 md:flex-col md:items-start md:gap-2">
+        <span className="text-[13px] font-bold uppercase tracking-[0.2em] text-white/50">Con el respaldo de</span>
+        {canAnimate && (
+          <button
+            type="button"
+            aria-label={paused ? 'Reanudar movimiento de aliados' : 'Pausar movimiento de aliados'}
+            aria-pressed={paused}
+            onClick={() => setPaused(!paused)}
+            className="inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-[12px] font-semibold text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+          >
+            {paused ? <Play size={13} aria-hidden="true" /> : <Pause size={13} aria-hidden="true" />}
+            {paused ? 'Reanudar' : 'Pausar'}
+          </button>
+        )}
+      </div>
+      <div
+        className="min-w-0 flex-1 overflow-hidden py-2"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onFocusCapture={() => setFocused(true)}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false);
+        }}
+      >
+        <motion.div
+          className={canAnimate ? 'flex w-max min-w-[200%]' : 'w-full'}
+          style={{ x }}
+        >
+          {(canAnimate ? [0, 1] : [0]).map((copy) => (
+            <ul
+              key={copy}
+              aria-hidden={copy === 1 ? true : undefined}
+              className={canAnimate
+                ? 'flex flex-1 items-center justify-around gap-3 pr-3'
+                : 'flex flex-wrap items-center justify-center gap-3'}
+            >
+              {aliados.map((aliado) => (
+                <li
+                  key={aliado.nombre}
+                  className="flex min-h-12 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-naranja/40 px-5 py-2.5 text-[15px] font-semibold text-durazno opacity-70 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
+                >
+                  {aliado.logo ? (
+                    <img src={aliado.logo} alt={aliado.nombre} className="h-8 w-36 object-contain" loading="lazy" />
+                  ) : aliado.nombre}
+                </li>
+              ))}
+            </ul>
+          ))}
+        </motion.div>
+      </div>
+    </div>
   );
 }
 
@@ -780,7 +870,7 @@ function Reserva({ interes, setInteres }: { interes: string; setInteres: (v: str
   const [enviado, setEnviado] = useState(false);
 
   const opciones = [
-    ...TALLERES.map((t) => `Taller ${t.num}: ${t.title}`),
+    ...TALLERES.map((t) => `${t.label}: ${t.title}`),
     ...PROGRAMAS.map((p) => `Programa: ${p.nombre}`),
     'Todos los talleres gratuitos',
     'Aún no sé, quiero orientación',
