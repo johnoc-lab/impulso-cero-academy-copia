@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="100" viewBox="0 0 360 100" fill="none">
+  <!-- Marcador temporal; sustituir por el logotipo oficial. -->
+  <path d="M8 30 40 12l32 18v38L40 86 8 68V30Z" stroke="#e39555" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M25 39h30M25 51h30M25 63h19" stroke="#e39555" stroke-width="5" stroke-linecap="round"/>
+  <text x="94" y="50" fill="#f7f4ee" font-family="Arial, sans-serif" font-size="34" font-weight="700">LA BASE</text>
+  <text x="96" y="76" fill="#e39555" font-family="Arial, sans-serif" font-size="16" letter-spacing="5">COWORK</text>
+</svg>

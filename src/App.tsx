@@ -802,10 +802,10 @@ function AliadosMarquee({ aliados }: { aliados: Aliado[] }) {
     <div
       role="region"
       aria-label="Marcas que nos respaldan"
-      className="mt-16 flex min-w-0 flex-col gap-5 border-t border-white/10 pt-10 md:flex-row md:items-center"
+      className="mt-20 flex min-w-0 flex-col gap-8 border-t border-white/10 py-10 md:mt-24 md:flex-row md:items-center md:py-12"
     >
       <div className="flex shrink-0 items-center justify-between gap-4 md:flex-col md:items-start md:gap-2">
-        <span className="text-[13px] font-bold uppercase tracking-[0.2em] text-white/50">Con el respaldo de</span>
+        <span className="text-[14px] font-bold uppercase tracking-[0.2em] text-white/70">Con el respaldo de</span>
         {canAnimate && (
           <button
             type="button"
@@ -820,7 +820,7 @@ function AliadosMarquee({ aliados }: { aliados: Aliado[] }) {
         )}
       </div>
       <div
-        className="min-w-0 flex-1 overflow-hidden py-2"
+        className="min-w-0 flex-1 overflow-hidden py-3"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onFocusCapture={() => setFocused(true)}
@@ -837,17 +837,30 @@ function AliadosMarquee({ aliados }: { aliados: Aliado[] }) {
               key={copy}
               aria-hidden={copy === 1 ? true : undefined}
               className={canAnimate
-                ? 'flex flex-1 items-center justify-around gap-3 pr-3'
-                : 'flex flex-wrap items-center justify-center gap-3'}
+                ? 'flex flex-1 items-center justify-around gap-6 pr-6 md:gap-10 md:pr-10'
+                : 'flex flex-wrap items-center justify-center gap-6 md:gap-10'}
             >
               {aliados.map((aliado) => (
                 <li
                   key={aliado.nombre}
-                  className="flex min-h-12 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-naranja/40 px-5 py-2.5 text-[15px] font-semibold text-durazno opacity-70 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
+                  className="shrink-0"
                 >
-                  {aliado.logo ? (
-                    <img src={aliado.logo} alt={aliado.nombre} className="h-8 w-36 object-contain" loading="lazy" />
-                  ) : aliado.nombre}
+                  <a
+                    href={aliado.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    tabIndex={copy === 1 ? -1 : undefined}
+                    aria-label={`${aliado.nombre} (abre en una pestaña nueva)`}
+                    className="group flex min-h-[88px] min-w-[180px] items-center justify-center rounded-2xl px-6 py-4 transition-colors hover:bg-white/5 md:min-h-[112px]"
+                  >
+                    <img
+                      src={aliado.logo}
+                      alt={aliado.nombre}
+                      className="h-12 w-auto max-w-[200px] object-contain opacity-60 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0 group-focus-visible:opacity-100 group-focus-visible:grayscale-0 md:h-16 md:max-w-[240px]"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </a>
                 </li>
               ))}
             </ul>

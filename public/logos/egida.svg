@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="100" viewBox="0 0 360 100" fill="none">
+  <!-- Marcador temporal; sustituir por el logotipo oficial. -->
+  <path d="M40 12 70 24v27c0 18-15 29-30 37C25 80 10 69 10 51V24l30-12Z" stroke="#f6c29f" stroke-width="5" stroke-linejoin="round"/>
+  <path d="m26 50 10 10 19-23" stroke="#f6c29f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="94" y="50" fill="#f7f4ee" font-family="Arial, sans-serif" font-size="34" font-weight="700">ÉGIDA</text>
+  <text x="96" y="76" fill="#f6c29f" font-family="Arial, sans-serif" font-size="16" letter-spacing="4">JURÍDICA</text>
+</svg>

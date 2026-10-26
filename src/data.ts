@@ -31,13 +31,16 @@ export const PONENTE = {
 
 export type Aliado = {
   nombre: string;
-  logo?: string; // URL del logotipo; mientras no exista, se muestra el nombre.
+  logo: string;
+  url: string;
 };
 
+// Datos y logos temporales: reemplazar por las marcas y enlaces oficiales desde el CMS.
 export const ALIADOS: Aliado[] = [
-  { nombre: 'La Base Cowork' },
-  { nombre: 'Égida Jurídica' },
-  { nombre: 'Finacorp' },
+  { nombre: 'La Base Cowork', logo: '/logos/la-base.svg', url: '#' },
+  { nombre: 'Égida Jurídica', logo: '/logos/egida.svg', url: '#' },
+  { nombre: 'Finacorp', logo: '/logos/finacorp.svg', url: '#' },
+  { nombre: 'Aliado de prueba', logo: '/logos/aliado-demo.svg', url: '#' },
 ];
 
 export const NAV = [

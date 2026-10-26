@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="100" viewBox="0 0 360 100" fill="none">
+  <!-- Marcador temporal; sustituir por el logotipo oficial. -->
+  <rect x="12" y="54" width="14" height="30" rx="3" fill="#b9c1cc"/>
+  <rect x="34" y="36" width="14" height="48" rx="3" fill="#e39555"/>
+  <rect x="56" y="16" width="14" height="68" rx="3" fill="#f6c29f"/>
+  <text x="94" y="58" fill="#f7f4ee" font-family="Arial, sans-serif" font-size="34" font-weight="700">FINACORP</text>
+  <path d="M96 73h182" stroke="#e39555" stroke-width="4" stroke-linecap="round"/>
+</svg>
