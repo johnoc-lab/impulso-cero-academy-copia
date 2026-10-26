@@ -430,6 +430,10 @@ function Ruta() {
   return (
     <section id="ruta" className="relative overflow-hidden bg-niebla px-5 py-24 md:px-8 md:py-32">
       <Orbits className="absolute -right-48 top-10 w-[640px] text-azul/10" />
+      <Orbits
+        className="absolute -left-48 top-40 w-[480px] text-azul/[0.07] opacity-70 md:w-[560px]"
+        node="rgba(215,129,51,0.45)"
+      />
       <div className="relative mx-auto max-w-[1240px]">
         <Reveal className="mx-auto max-w-[760px] text-center">
           <Kicker>Ruta de despegue</Kicker>
@@ -449,7 +453,23 @@ function Ruta() {
               style={{ top }}
               className="absolute left-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-naranja text-azul-ink shadow-[0_0_0_8px_rgba(215,129,51,0.16),0_0_28px_rgba(215,129,51,0.65),0_0_64px_rgba(215,129,51,0.4)]"
             >
-              <Rocket size={22} className="-rotate-45 drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]" />
+              {/* La levitación va dentro del marcador para conservar su centrado en el riel. */}
+              <motion.div
+                className="relative flex h-full w-full items-center justify-center"
+                animate={reduceMotion ? { y: 0 } : { y: [0, -2, 0] }}
+                transition={{ duration: 1.4, repeat: reduceMotion ? 0 : Infinity, ease: 'easeInOut' }}
+              >
+                <span className="absolute left-1/2 top-10 -translate-x-1/2">
+                  <motion.span
+                    className="block h-7 w-3 origin-top rounded-b-full bg-gradient-to-b from-durazno via-naranja to-transparent shadow-[0_6px_18px_rgba(215,129,51,0.65)] blur-[2px]"
+                    animate={reduceMotion
+                      ? { opacity: 0.55, scaleY: 0.7 }
+                      : { opacity: [0.55, 0.95, 0.55], scaleY: [0.7, 1.15, 0.7] }}
+                    transition={{ duration: 0.6, repeat: reduceMotion ? 0 : Infinity, ease: 'easeInOut' }}
+                  />
+                </span>
+                <Rocket size={22} className="relative -rotate-45 drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]" />
+              </motion.div>
             </motion.div>
           </div>
 
