@@ -429,10 +429,14 @@ function Ruta() {
 
   return (
     <section id="ruta" className="relative overflow-hidden bg-niebla px-5 py-24 md:px-8 md:py-32">
-      <Orbits className="absolute -right-48 top-10 w-[640px] text-azul/10" />
+      <Orbits className="absolute -right-48 top-10 w-[420px] text-azul/10 opacity-40 md:w-[640px] md:opacity-100" />
       <Orbits
-        className="absolute -left-48 top-40 w-[480px] text-azul/[0.07] opacity-70 md:w-[560px]"
+        className="absolute -left-48 top-1/2 hidden w-[560px] -translate-y-1/2 text-azul/[0.07] opacity-70 md:block"
         node="rgba(215,129,51,0.45)"
+      />
+      <Orbits
+        className="absolute -right-44 bottom-8 hidden w-[520px] text-azul/[0.08] opacity-70 md:block"
+        node="rgba(215,129,51,0.5)"
       />
       <div className="relative mx-auto max-w-[1240px]">
         <Reveal className="mx-auto max-w-[760px] text-center">
