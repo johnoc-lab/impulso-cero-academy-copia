@@ -13,7 +13,7 @@ import {
 export const MARCA = 'Impulso Cero Academy';
 
 // Cambia por tu número real (formato internacional sin +, ej. 51987654321)
-export const WHATSAPP = '51900000000';
+export const WHATSAPP = '51999999999';
 export const waLink = (msg: string) =>
   `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
 
