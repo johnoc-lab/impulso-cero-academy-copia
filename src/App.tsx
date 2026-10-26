@@ -383,9 +383,49 @@ function Dolores({ onPick }: { onPick: (i: number) => void }) {
 /* ------------------------------------------------------------------ */
 function Ruta() {
   const ref = useRef<HTMLDivElement>(null);
+  const railRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const [activeStep, setActiveStep] = useState(-1);
+  const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 75%', 'end 55%'] });
   const fill = useTransform(scrollYProgress, [0, 1], [0, 1]);
   const top = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+
+  useEffect(() => {
+    const container = ref.current;
+    const rail = railRef.current;
+    if (!container || !rail) return;
+
+    let ranges: { start: number; end: number }[] = [];
+    let currentStep = -1;
+    const updateActiveStep = (progress: number) => {
+      const next = ranges.findIndex(({ start, end }) => progress >= start && progress <= end);
+      // Solo actualiza React cuando el cohete entra o sale de una tarjeta.
+      if (next !== currentStep) {
+        currentStep = next;
+        setActiveStep(next);
+      }
+    };
+    const measure = () => {
+      if (!rail.offsetHeight) return;
+      // Coordenadas de layout: las animaciones de entrada y hover no alteran los umbrales.
+      ranges = cardRefs.current.map((card) => ({
+        start: card ? (card.offsetTop - rail.offsetTop) / rail.offsetHeight : Infinity,
+        end: card ? (card.offsetTop + card.offsetHeight - rail.offsetTop) / rail.offsetHeight : -Infinity,
+      }));
+      updateActiveStep(scrollYProgress.get());
+    };
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(container);
+    cardRefs.current.forEach((card) => card && observer.observe(card));
+    measure();
+    const unsubscribe = scrollYProgress.on('change', updateActiveStep);
+    return () => {
+      unsubscribe();
+      observer.disconnect();
+    };
+  }, [scrollYProgress]);
 
   return (
     <section id="ruta" className="relative overflow-hidden bg-niebla px-5 py-24 md:px-8 md:py-32">
@@ -403,42 +443,50 @@ function Ruta() {
 
         <div ref={ref} className="relative mx-auto mt-16 max-w-[860px]">
           {/* Riel */}
-          <div className="absolute bottom-6 left-[27px] top-6 w-[3px] rounded-full bg-grisazul/50 md:left-1/2 md:-translate-x-1/2">
+          <div ref={railRef} aria-hidden="true" className="pointer-events-none absolute bottom-6 left-[27px] top-6 z-10 w-[3px] rounded-full bg-grisazul/50 md:left-1/2 md:-translate-x-1/2">
             <motion.div style={{ scaleY: fill }} className="h-full w-full origin-top rounded-full bg-naranja" />
             <motion.div
               style={{ top }}
-              className="absolute left-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-naranja text-azul-ink shadow-[0_0_0_6px_rgba(215,129,51,0.2)]"
+              className="absolute left-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-naranja text-azul-ink shadow-[0_0_0_8px_rgba(215,129,51,0.16),0_0_28px_rgba(215,129,51,0.65),0_0_64px_rgba(215,129,51,0.4)]"
             >
-              <Rocket size={20} className="-rotate-45" />
+              <Rocket size={22} className="-rotate-45 drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]" />
             </motion.div>
           </div>
 
-          <div className="space-y-10 md:space-y-16">
+          <ol className="space-y-10 md:space-y-16">
             {RUTA.map((p, i) => {
               const right = i % 2 === 1;
+              const active = activeStep === i;
+              const last = i === RUTA.length - 1;
               return (
-                <motion.div
+                <motion.li
                   key={p.t}
-                  initial={{ opacity: 0, y: 40 }}
+                  ref={(element) => { cardRefs.current[i] = element; }}
+                  aria-current={active ? 'step' : undefined}
+                  initial={reduceMotion ? false : { opacity: 0, y: 40 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-80px' }}
                   transition={{ duration: 0.7, ease: EASE }}
                   className={`relative pl-20 md:w-1/2 md:pl-0 ${right ? 'md:ml-auto md:pl-16' : 'md:pr-16 md:text-right'}`}
                 >
-                  <div className={`rounded-3xl p-7 shadow-[0_14px_40px_rgba(44,49,89,0.08)] ${i === 3 ? 'bg-azul text-white' : 'bg-white'}`}>
+                  <div className={`rounded-3xl border-2 p-7 transition-[transform,border-color,box-shadow] duration-300 motion-safe:hover:-translate-y-2 hover:shadow-[0_22px_55px_rgba(215,129,51,0.2)] ${
+                    active
+                      ? 'border-naranja shadow-[0_18px_50px_rgba(215,129,51,0.26),0_0_0_4px_rgba(215,129,51,0.08)]'
+                      : 'border-transparent shadow-[0_14px_40px_rgba(44,49,89,0.08)]'
+                  } ${last ? 'bg-azul text-white' : 'bg-white'}`}>
                     <div className={`flex items-center gap-4 ${right ? '' : 'md:flex-row-reverse'}`}>
-                      <span className={`display text-6xl font-black ${i === 3 ? 'text-naranja' : 'text-durazno'}`}>{p.n}</span>
-                      <span className={`flex h-11 w-11 items-center justify-center rounded-2xl ${i === 3 ? 'bg-naranja text-azul-ink' : 'bg-niebla text-azul'}`}>
+                      <span className={`display text-6xl font-black transition-colors duration-300 ${active || last ? 'text-naranja' : 'text-durazno'}`}>{p.n}</span>
+                      <span className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-colors duration-300 ${active || last ? 'bg-naranja text-azul-ink' : 'bg-niebla text-azul'}`}>
                         <p.Icon size={20} />
                       </span>
                     </div>
                     <h3 className="mt-4 text-[22px] font-extrabold">{p.t}</h3>
-                    <p className={`mt-2 text-[15px] leading-relaxed ${i === 3 ? 'text-white/75' : 'text-azul/70'}`}>{p.d}</p>
+                    <p className={`mt-2 text-[15px] leading-relaxed ${last ? 'text-white/75' : 'text-azul/70'}`}>{p.d}</p>
                   </div>
-                </motion.div>
+                </motion.li>
               );
             })}
-          </div>
+          </ol>
         </div>
       </div>
     </section>
