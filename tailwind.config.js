@@ -13,7 +13,7 @@ export default {
         marfil: '#f7f4ee',
       },
       fontFamily: {
-        display: ['Tektur', 'sans-serif'],
+        display: ['Space Grotesk', 'sans-serif'],
         sans: ['Sora', 'sans-serif'],
       },
     },
