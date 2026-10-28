@@ -16,16 +16,10 @@ html {
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  @apply font-sans;
   background: #f7f4ee;
   color: #2c3159;
   overflow-x: hidden;
-}
-
-.display {
-  font-family: 'Geoform', 'Montserrat', system-ui, sans-serif;
-  letter-spacing: -0.02em;
-  line-height: 0.98;
 }
 
 /* Entrada del hero */

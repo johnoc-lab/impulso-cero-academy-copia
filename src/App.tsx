@@ -223,7 +223,7 @@ function Hero() {
             <Kicker light>Academia para emprendedores</Kicker>
           </div>
 
-          <h1 className="hero-title display anim-up mt-6 max-w-[680px] text-[3.1rem] font-black uppercase sm:text-[4.2rem] lg:text-[5.4rem]" style={{ animationDelay: '0.2s' }}>
+          <h1 className="hero-title font-display anim-up mt-6 max-w-[680px] text-[3.1rem] font-black uppercase sm:text-[4.2rem] lg:text-[5.4rem]" style={{ animationDelay: '0.2s' }}>
             Tu idea.
             <br />
             <span className="text-naranja">Nuestro</span>
@@ -260,7 +260,7 @@ function Hero() {
               { k: '+15', v: 'cupos por sesión' },
             ].map((s) => (
               <div key={s.v}>
-                <div className="display text-3xl font-black text-white md:text-4xl">{s.k}</div>
+                <div className="font-display text-3xl font-black leading-[0.98] tracking-[-0.02em] text-white md:text-4xl">{s.k}</div>
                 <div className="mt-1.5 text-[13px] leading-snug text-white/60">{s.v}</div>
               </div>
             ))}
@@ -326,7 +326,7 @@ function Marquee() {
         {[0, 1].map((k) => (
           <div key={k} className="flex shrink-0">
             {row.map((t, i) => (
-              <span key={`${k}-${i}`} className="display flex items-center gap-6 px-6 text-xl font-black uppercase md:text-2xl">
+              <span key={`${k}-${i}`} className="font-display flex items-center gap-6 px-6 text-xl font-black uppercase leading-[0.98] tracking-[-0.02em] md:text-2xl">
                 {t}
                 <Rocket size={18} className="-rotate-45" />
               </span>
@@ -348,7 +348,7 @@ function Dolores({ onPick }: { onPick: (i: number) => void }) {
         <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <Reveal>
             <Kicker>¿Te suena familiar?</Kicker>
-            <h2 className="display mt-5 text-[2.3rem] font-black uppercase md:text-[3.4rem]">
+            <h2 className="font-display mt-5 text-[2.3rem] font-black uppercase leading-[0.98] tracking-[-0.02em] md:text-[3.4rem]">
               Todo gran negocio empezó en <span className="text-naranja">cero</span>.
             </h2>
           </Reveal>
@@ -495,7 +495,7 @@ function Ruta() {
         <Reveal className="mx-auto max-w-[760px] text-center">
           <Kicker><motion.span style={{ color: headingColor }}>Ruta de despegue</motion.span></Kicker>
           <motion.h2
-            className="display mt-5 text-[2.3rem] font-black uppercase md:text-[3.4rem]"
+            className="font-display mt-5 text-[2.3rem] font-black uppercase leading-[0.98] tracking-[-0.02em] md:text-[3.4rem]"
             style={{ color: headingColor }}
           >
             3, 2, 1… <motion.span style={{ color: accentColor }}>despega</motion.span>
@@ -569,7 +569,7 @@ function Ruta() {
                         : 'border-transparent shadow-[0_14px_40px_rgba(44,49,89,0.08)]'
                     } ${last ? 'bg-azul text-white' : 'bg-white'}`}>
                       <div className={`flex items-center gap-4 ${right ? '' : 'md:flex-row-reverse'}`}>
-                        <span className={`display text-6xl font-black transition-colors duration-300 ${active || last ? 'text-naranja' : 'text-durazno'}`}>{p.n}</span>
+                        <span className={`font-display text-6xl font-black leading-[0.98] tracking-[-0.02em] transition-colors duration-300 ${active || last ? 'text-naranja' : 'text-durazno'}`}>{p.n}</span>
                         <span className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-colors duration-300 ${active || last ? 'bg-naranja text-azul-ink' : 'bg-niebla text-azul'}`}>
                           <p.Icon size={20} />
                         </span>
@@ -617,7 +617,7 @@ function Talleres({
         <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <Reveal>
             <Kicker light>Talleres gratuitos · Formación práctica</Kicker>
-            <h2 className="display mt-5 max-w-[720px] text-[2.3rem] font-black uppercase md:text-[3.4rem]">
+            <h2 className="font-display mt-5 max-w-[720px] text-[2.3rem] font-black uppercase leading-[0.98] tracking-[-0.02em] md:text-[3.4rem]">
               Cuatro viernes para <span className="text-naranja">blindar y hacer crecer</span> tu negocio
             </h2>
           </Reveal>
@@ -648,12 +648,12 @@ function Talleres({
                 exit={{ opacity: 0, y: -30 }}
                 transition={{ duration: 0.55, ease: EASE }}
               >
-                <span aria-hidden="true" className="display pointer-events-none absolute -bottom-4 -right-3 select-none text-[5.5rem] font-black uppercase leading-none text-white/25 md:text-[7.5rem]">
+                <span aria-hidden="true" className="font-display pointer-events-none absolute -bottom-4 -right-3 select-none text-[5.5rem] font-black uppercase leading-none tracking-[-0.02em] text-white/25 md:text-[7.5rem]">
                   {t.clave}
                 </span>
                 <div className="flex items-start justify-between">
                   <div className="rounded-2xl bg-azul px-5 py-4 text-center text-white">
-                    <div className="display text-4xl font-black leading-none">{t.dateShort.split(' ')[0]}</div>
+                    <div className="font-display text-4xl font-black leading-none tracking-[-0.02em]">{t.dateShort.split(' ')[0]}</div>
                     <div className="mt-1 text-[12px] font-bold tracking-widest text-durazno">{t.dateShort.split(' ')[1]}</div>
                   </div>
                   <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/30">
@@ -767,7 +767,7 @@ function Programas({ onReservar }: { onReservar: (v: string) => void }) {
       <div className="mx-auto max-w-[1240px]">
         <Reveal className="mx-auto max-w-[760px] text-center">
           <Kicker>Siguiente nivel</Kicker>
-          <h2 className="display mt-5 text-[2.3rem] font-black uppercase md:text-[3.4rem]">
+          <h2 className="font-display mt-5 text-[2.3rem] font-black uppercase leading-[0.98] tracking-[-0.02em] md:text-[3.4rem]">
             ¿Listo para llegar <span className="text-naranja">más lejos</span>?
           </h2>
           <p className="mx-auto mt-5 max-w-[580px] text-[17px] leading-relaxed text-azul/75">
@@ -931,7 +931,7 @@ function Nosotros() {
         <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
           <Reveal>
             <Kicker light>Nuestra esencia</Kicker>
-            <h2 className="display mt-5 text-[2.3rem] font-black uppercase md:text-[3.4rem]">
+            <h2 className="font-display mt-5 text-[2.3rem] font-black uppercase leading-[0.98] tracking-[-0.02em] md:text-[3.4rem]">
               El punto de partida para <span className="text-naranja">transformar ideas en acción</span>
             </h2>
             <p className="mt-6 max-w-[540px] text-[17px] leading-relaxed text-white/75">
@@ -975,7 +975,7 @@ function Nosotros() {
                 />
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-azul-ink via-azul-ink/85 to-transparent p-7 pt-20">
                   <div className="text-[12px] font-bold uppercase tracking-[0.2em] text-durazno">Ponente</div>
-                  <div className="display mt-1 text-3xl font-black uppercase">{PONENTE.nombre}</div>
+                  <div className="font-display mt-1 text-3xl font-black uppercase leading-[0.98] tracking-[-0.02em]">{PONENTE.nombre}</div>
                   <div className="mt-1 text-[14px] text-white/75">{PONENTE.rol}</div>
                 </div>
               </div>
@@ -988,7 +988,7 @@ function Nosotros() {
           {PERSONALIDAD.map((p, i) => (
             <Reveal key={p.t} delay={i * 0.08}>
               <div className="group h-full rounded-3xl border border-white/10 p-6 transition-colors hover:border-naranja hover:bg-naranja hover:text-azul-ink">
-                <div className="display text-2xl font-black uppercase">{p.t}</div>
+                <div className="font-display text-2xl font-black uppercase leading-[0.98] tracking-[-0.02em]">{p.t}</div>
                 <p className="mt-2 text-[14px] leading-relaxed text-white/65 group-hover:text-azul-ink/80">{p.d}</p>
               </div>
             </Reveal>
@@ -1150,7 +1150,7 @@ function Reserva({ interes, setInteres }: { interes: string; setInteres: (v: str
       <div className="relative mx-auto grid max-w-[1240px] gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <Reveal>
           <Kicker>Reserva gratis</Kicker>
-          <h2 className="display mt-5 text-[2.6rem] font-black uppercase md:text-[4rem]">
+          <h2 className="font-display mt-5 text-[2.6rem] font-black uppercase leading-[0.98] tracking-[-0.02em] md:text-[4rem]">
             Tu cuenta regresiva <span className="text-naranja [-webkit-text-stroke:0]">empieza hoy</span>
           </h2>
           <p className="mt-6 max-w-[480px] text-[17px] leading-relaxed text-azul/80">
@@ -1182,7 +1182,7 @@ function Reserva({ interes, setInteres }: { interes: string; setInteres: (v: str
                   <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-naranja text-azul-ink">
                     <Rocket size={36} className="-rotate-45" />
                   </span>
-                  <h3 className="display mt-6 text-3xl font-black uppercase">¡Despegaste!</h3>
+                  <h3 className="font-display mt-6 text-3xl font-black uppercase leading-[0.98] tracking-[-0.02em]">¡Despegaste!</h3>
                   <p className="mx-auto mt-3 max-w-[340px] text-azul/75">
                     Te abrimos WhatsApp con tu mensaje listo. Solo presiona enviar y te confirmamos tu cupo.
                   </p>
@@ -1274,7 +1274,7 @@ function Faq() {
       <div className="mx-auto grid max-w-[1100px] gap-12 lg:grid-cols-[0.8fr_1.2fr]">
         <Reveal>
           <Kicker>Preguntas frecuentes</Kicker>
-          <h2 className="display mt-5 text-[2.3rem] font-black uppercase md:text-[3rem]">
+          <h2 className="font-display mt-5 text-[2.3rem] font-black uppercase leading-[0.98] tracking-[-0.02em] md:text-[3rem]">
             Resolvemos tus <span className="text-naranja">dudas</span>
           </h2>
           <p className="mt-5 text-[16px] leading-relaxed text-azul/70">¿No encuentras tu respuesta?</p>

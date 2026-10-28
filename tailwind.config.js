@@ -12,11 +12,9 @@ export default {
         durazno: '#f6c29f',
         marfil: '#f7f4ee',
       },
-      // Geoform (títulos) no está en Google Fonts: si se agrega el OTF con @font-face
-      // se usa solo; mientras tanto cae en Montserrat, la más parecida.
       fontFamily: {
-        display: ['Geoform', 'Montserrat', 'system-ui', 'sans-serif'],
-        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        display: ['Tektur', 'sans-serif'],
+        sans: ['Sora', 'sans-serif'],
       },
     },
   },
