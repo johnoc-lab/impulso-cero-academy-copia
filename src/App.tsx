@@ -1,5 +1,15 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { animate, AnimatePresence, motion, useMotionValue, useReducedMotion, useScroll, useTransform } from 'motion/react';
+import { useEffect, useRef, useState, type FormEvent, type PointerEvent } from 'react';
+import {
+  animate,
+  AnimatePresence,
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from 'motion/react';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -37,6 +47,7 @@ import {
   FAQ,
   waLink,
   type Aliado,
+  type Programa,
 } from './data';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -680,6 +691,17 @@ function Talleres({
 /* PROGRAMAS                                                            */
 /* ------------------------------------------------------------------ */
 function Programas({ onReservar }: { onReservar: (v: string) => void }) {
+  const reduceMotion = useReducedMotion();
+  const [finePointer, setFinePointer] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const update = () => setFinePointer(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+
   return (
     <section id="programas" className="bg-marfil px-5 py-24 md:px-8 md:py-32">
       <div className="mx-auto max-w-[1240px]">
@@ -696,60 +718,145 @@ function Programas({ onReservar }: { onReservar: (v: string) => void }) {
 
         <div className="mt-16 grid gap-6 lg:grid-cols-3 lg:items-stretch">
           {PROGRAMAS.map((p, i) => (
-            <motion.div
+            <ProgramaCard
               key={p.nombre}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.65, delay: i * 0.1, ease: EASE }}
-              whileHover={{ y: -8 }}
-              className={`relative flex flex-col rounded-[2rem] p-8 ${
-                p.destacado
-                  ? 'bg-azul text-white shadow-[0_30px_70px_rgba(44,49,89,0.35)] lg:-my-4 lg:py-12'
-                  : 'border border-azul/10 bg-white'
-              }`}
-            >
-              {p.destacado && (
-                <div className="absolute -top-3.5 left-8 inline-flex items-center gap-1.5 rounded-full bg-naranja px-4 py-1.5 text-[12px] font-extrabold uppercase tracking-wider text-azul-ink">
-                  <Star size={13} strokeWidth={2.5} /> Más pedido
-                </div>
-              )}
-              <span className={`flex h-14 w-14 items-center justify-center rounded-2xl ${p.destacado ? 'bg-naranja text-azul-ink' : 'bg-durazno/60 text-azul'}`}>
-                <p.Icon size={26} />
-              </span>
-              <h3 className="mt-6 text-[1.5rem] font-extrabold leading-tight">{p.nombre}</h3>
-              <p className={`mt-2 text-[15px] ${p.destacado ? 'text-white/75' : 'text-azul/70'}`}>{p.tagline}</p>
-              <div className={`mt-4 text-[13px] font-bold uppercase tracking-wider ${p.destacado ? 'text-durazno' : 'text-naranja'}`}>
-                {p.duracion}
-              </div>
-              <ul className="mt-6 flex-1 space-y-3">
-                {p.incluye.map((item) => (
-                  <li key={item} className={`flex items-start gap-3 text-[15px] ${p.destacado ? 'text-white/85' : 'text-azul/85'}`}>
-                    <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${p.destacado ? 'bg-naranja text-azul-ink' : 'bg-azul text-white'}`}>
-                      <Check size={12} strokeWidth={3} />
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <div className={`mt-8 border-t pt-6 ${p.destacado ? 'border-white/15' : 'border-azul/10'}`}>
-                <div className="mb-4 text-[15px] font-bold">{p.precio}</div>
-                <button
-                  onClick={() => onReservar(`Programa: ${p.nombre}`)}
-                  className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 text-[15px] font-bold transition ${
-                    p.destacado
-                      ? 'bg-naranja text-azul-ink hover:bg-naranja-soft'
-                      : 'border-2 border-azul text-azul hover:bg-azul hover:text-white'
-                  }`}
-                >
-                  Quiero información <ArrowRight size={17} />
-                </button>
-              </div>
-            </motion.div>
+              programa={p}
+              index={i}
+              onReservar={onReservar}
+              tiltEnabled={finePointer && !reduceMotion}
+              reduceMotion={Boolean(reduceMotion)}
+            />
           ))}
         </div>
       </div>
     </section>
+  );
+}
+
+function ProgramaCard({
+  programa: p,
+  index,
+  onReservar,
+  tiltEnabled,
+  reduceMotion,
+}: {
+  programa: Programa;
+  index: number;
+  onReservar: (value: string) => void;
+  tiltEnabled: boolean;
+  reduceMotion: boolean;
+}) {
+  const pointerX = useMotionValue(0.5);
+  const pointerY = useMotionValue(0.5);
+  const hoverAmount = useMotionValue(0);
+  const smoothX = useSpring(pointerX, { stiffness: 180, damping: 24, mass: 0.6 });
+  const smoothY = useSpring(pointerY, { stiffness: 180, damping: 24, mass: 0.6 });
+  const energy = useSpring(hoverAmount, { stiffness: 180, damping: 24, mass: 0.6 });
+  const rotateX = useTransform(smoothY, [0, 1], [5, -5]);
+  const rotateY = useTransform(smoothX, [0, 1], [-5, 5]);
+  const lift = useTransform(energy, [0, 1], [0, -6]);
+  const glowX = useTransform(smoothX, [0, 1], ['0%', '100%']);
+  const glowY = useTransform(smoothY, [0, 1], ['0%', '100%']);
+  const glow = useMotionTemplate`radial-gradient(320px circle at ${glowX} ${glowY}, rgba(215,129,51,0.2), transparent 70%)`;
+
+  const resetTilt = () => {
+    pointerX.set(0.5);
+    pointerY.set(0.5);
+    hoverAmount.set(0);
+  };
+
+  useEffect(() => {
+    if (!tiltEnabled) {
+      pointerX.set(0.5);
+      pointerY.set(0.5);
+      hoverAmount.set(0);
+    }
+  }, [tiltEnabled, pointerX, pointerY, hoverAmount]);
+
+  const moveTilt = (event: PointerEvent<HTMLDivElement>) => {
+    if (!tiltEnabled || event.pointerType === 'touch') {
+      resetTilt();
+      return;
+    }
+    // El contenedor no gira: sus coordenadas mantienen estable el seguimiento.
+    const bounds = event.currentTarget.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) return;
+    pointerX.set(Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width)));
+    pointerY.set(Math.max(0, Math.min(1, (event.clientY - bounds.top) / bounds.height)));
+    hoverAmount.set(1);
+  };
+
+  return (
+    <motion.div
+      initial={reduceMotion ? false : { opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.65, delay: index * 0.1, ease: EASE }}
+      onPointerEnter={moveTilt}
+      onPointerMove={moveTilt}
+      onPointerLeave={resetTilt}
+      onPointerCancel={resetTilt}
+      onFocusCapture={resetTilt}
+      className={`relative flex min-w-0 [perspective:1000px] hover:z-10 focus-within:z-10 ${p.destacado ? 'lg:-my-4' : ''}`}
+    >
+      <motion.article
+        style={{
+          rotateX: tiltEnabled ? rotateX : 0,
+          rotateY: tiltEnabled ? rotateY : 0,
+          y: tiltEnabled ? lift : 0,
+        }}
+        className={`relative isolate flex min-w-0 flex-1 flex-col rounded-[2rem] p-8 focus-within:ring-2 focus-within:ring-naranja/50 ${
+          p.destacado
+            ? 'bg-azul text-white shadow-[0_30px_70px_rgba(44,49,89,0.35)] lg:py-12'
+            : 'border border-azul/10 bg-white'
+        }`}
+      >
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 rounded-[2rem]"
+          style={{ backgroundImage: glow, opacity: tiltEnabled ? energy : 0 }}
+        />
+        {p.destacado && (
+          <div className="absolute -top-3.5 left-8 z-20 inline-flex items-center gap-1.5 rounded-full bg-naranja px-4 py-1.5 text-[12px] font-extrabold uppercase tracking-wider text-azul-ink">
+            <Star size={13} strokeWidth={2.5} /> Más pedido
+          </div>
+        )}
+        <div className="relative z-10 flex flex-1 flex-col">
+          <span className={`flex h-14 w-14 items-center justify-center rounded-2xl ${p.destacado ? 'bg-naranja text-azul-ink' : 'bg-durazno/60 text-azul'}`}>
+            <p.Icon size={26} />
+          </span>
+          <h3 className="mt-6 text-[1.5rem] font-extrabold leading-tight">{p.nombre}</h3>
+          <p className={`mt-2 text-[15px] ${p.destacado ? 'text-white/75' : 'text-azul/70'}`}>{p.tagline}</p>
+          <div className={`mt-4 text-[13px] font-bold uppercase tracking-wider ${p.destacado ? 'text-durazno' : 'text-naranja'}`}>
+            {p.duracion}
+          </div>
+          <ul className="mt-6 flex-1 space-y-3">
+            {p.incluye.map((item) => (
+              <li key={item} className={`flex items-start gap-3 text-[15px] ${p.destacado ? 'text-white/85' : 'text-azul/85'}`}>
+                <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${p.destacado ? 'bg-naranja text-azul-ink' : 'bg-azul text-white'}`}>
+                  <Check size={12} strokeWidth={3} />
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
+          <div className={`mt-8 border-t pt-6 ${p.destacado ? 'border-white/15' : 'border-azul/10'}`}>
+            <div className="mb-4 text-[15px] font-bold">{p.precio}</div>
+            <button
+              type="button"
+              onClick={() => onReservar(`Programa: ${p.nombre}`)}
+              className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 text-[15px] font-bold transition ${
+                p.destacado
+                  ? 'bg-naranja text-azul-ink hover:bg-naranja-soft'
+                  : 'border-2 border-azul text-azul hover:bg-azul hover:text-white'
+              }`}
+            >
+              Quiero información <ArrowRight size={17} />
+            </button>
+          </div>
+        </div>
+      </motion.article>
+    </motion.div>
   );
 }
 
