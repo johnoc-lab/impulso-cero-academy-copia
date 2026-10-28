@@ -401,6 +401,21 @@ function Ruta() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 75%', 'end 55%'] });
   const fill = useTransform(scrollYProgress, [0, 1], [0, 1]);
   const top = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+  const immersion = useMotionValue(0);
+  // Evita interpolar el texto por grises que se confundan con el fondo intermedio.
+  const headingColor = useTransform(immersion, (value) =>
+    value < 0.38 ? '#2c3159' : value < 0.59 ? '#000000' : '#ffffff',
+  );
+  const lightAccent = useTransform(immersion, [0, 0.25], ['#d78133', '#2c3159']);
+  const darkAccent = useTransform(immersion, [0.8, 1], ['#ffffff', '#d78133']);
+  const accentColor = useTransform(() => {
+    const progress = immersion.get();
+    const light = lightAccent.get();
+    const dark = darkAccent.get();
+    const readable = headingColor.get();
+    return progress < 0.25 ? light : progress > 0.8 ? dark : readable;
+  });
+  const orbitColor = useTransform(immersion, [0, 1], ['rgba(44,49,89,0.1)', 'rgba(255,255,255,0.14)']);
 
   useEffect(() => {
     const container = ref.current;
@@ -408,7 +423,8 @@ function Ruta() {
     if (!container || !rail) return;
 
     let ranges: { start: number; end: number }[] = [];
-    let currentStep = -1;
+    let currentStep: number | null = null;
+    let arrival = { start: 1, end: 1, entry: 1 };
     const updateActiveStep = (progress: number) => {
       const next = ranges.findIndex(({ start, end }) => progress >= start && progress <= end);
       // Solo actualiza React cuando el cohete entra o sale de una tarjeta.
@@ -416,6 +432,12 @@ function Ruta() {
         currentStep = next;
         setActiveStep(next);
       }
+      const approach = Math.max(0, Math.min(1,
+        (progress - arrival.start) / Math.max(arrival.end - arrival.start, 0.001),
+      ));
+      immersion.set(reduceMotion
+        ? Number(progress >= arrival.entry)
+        : approach * approach * (3 - 2 * approach));
     };
     const measure = () => {
       if (!rail.offsetHeight) return;
@@ -424,6 +446,15 @@ function Ruta() {
         start: card ? (card.offsetTop - rail.offsetTop) / rail.offsetHeight : Infinity,
         end: card ? (card.offsetTop + card.offsetHeight - rail.offsetTop) / rail.offsetHeight : -Infinity,
       }));
+      const last = ranges[ranges.length - 1];
+      const previous = ranges[ranges.length - 2];
+      if (last && Number.isFinite(last.start)) {
+        arrival = {
+          start: previous ? (previous.end + last.start) / 2 : last.start,
+          end: Math.min(1, (last.start + last.end) / 2),
+          entry: last.start,
+        };
+      }
       updateActiveStep(scrollYProgress.get());
     };
 
@@ -436,28 +467,45 @@ function Ruta() {
       unsubscribe();
       observer.disconnect();
     };
-  }, [scrollYProgress]);
+  }, [scrollYProgress, immersion, reduceMotion]);
 
   return (
-    <section id="ruta" className="relative overflow-hidden bg-niebla px-5 py-24 md:px-8 md:py-32">
-      <Orbits className="absolute -right-48 top-10 w-[420px] text-azul/10 opacity-40 md:w-[640px] md:opacity-100" />
-      <Orbits
-        className="absolute -left-48 top-1/2 hidden w-[560px] -translate-y-1/2 text-azul/[0.07] opacity-70 md:block"
-        node="rgba(215,129,51,0.45)"
+    <section id="ruta" className="relative isolate overflow-hidden bg-niebla px-5 py-24 md:px-8 md:py-32">
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-azul-deep"
+        style={{ opacity: immersion }}
       />
-      <Orbits
-        className="absolute -right-44 bottom-8 hidden w-[520px] text-azul/[0.08] opacity-70 md:block"
-        node="rgba(215,129,51,0.5)"
-      />
-      <div className="relative mx-auto max-w-[1240px]">
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{ color: orbitColor }}
+      >
+        <Orbits className="absolute -right-48 top-10 w-[420px] opacity-40 md:w-[640px] md:opacity-100" />
+        <Orbits
+          className="absolute -left-48 top-1/2 hidden w-[560px] -translate-y-1/2 opacity-50 md:block"
+          node="rgba(215,129,51,0.45)"
+        />
+        <Orbits
+          className="absolute -right-44 bottom-8 hidden w-[520px] opacity-70 md:block"
+          node="rgba(215,129,51,0.5)"
+        />
+      </motion.div>
+      <div className="relative z-10 mx-auto max-w-[1240px]">
         <Reveal className="mx-auto max-w-[760px] text-center">
-          <Kicker>Ruta de despegue</Kicker>
-          <h2 className="display mt-5 text-[2.3rem] font-black uppercase md:text-[3.4rem]">
-            3, 2, 1… <span className="text-naranja">despega</span>
-          </h2>
-          <p className="mx-auto mt-5 max-w-[560px] text-[17px] leading-relaxed text-azul/75">
+          <Kicker><motion.span style={{ color: headingColor }}>Ruta de despegue</motion.span></Kicker>
+          <motion.h2
+            className="display mt-5 text-[2.3rem] font-black uppercase md:text-[3.4rem]"
+            style={{ color: headingColor }}
+          >
+            3, 2, 1… <motion.span style={{ color: accentColor }}>despega</motion.span>
+          </motion.h2>
+          <motion.p
+            className="mx-auto mt-5 max-w-[560px] text-[17px] leading-relaxed"
+            style={{ color: headingColor }}
+          >
             Así acompañamos a cada emprendedor, desde el punto cero hasta un negocio con proyección.
-          </p>
+          </motion.p>
         </Reveal>
 
         <div ref={ref} className="relative mx-auto mt-16 max-w-[860px]">
@@ -504,19 +552,31 @@ function Ruta() {
                   transition={{ duration: 0.7, ease: EASE }}
                   className={`relative pl-20 md:w-1/2 md:pl-0 ${right ? 'md:ml-auto md:pl-16' : 'md:pr-16 md:text-right'}`}
                 >
-                  <div className={`rounded-3xl border-2 p-7 transition-[transform,border-color,box-shadow] duration-300 motion-safe:hover:-translate-y-2 hover:shadow-[0_22px_55px_rgba(215,129,51,0.2)] ${
-                    active
-                      ? 'border-naranja shadow-[0_18px_50px_rgba(215,129,51,0.26),0_0_0_4px_rgba(215,129,51,0.08)]'
-                      : 'border-transparent shadow-[0_14px_40px_rgba(44,49,89,0.08)]'
-                  } ${last ? 'bg-azul text-white' : 'bg-white'}`}>
-                    <div className={`flex items-center gap-4 ${right ? '' : 'md:flex-row-reverse'}`}>
-                      <span className={`display text-6xl font-black transition-colors duration-300 ${active || last ? 'text-naranja' : 'text-durazno'}`}>{p.n}</span>
-                      <span className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-colors duration-300 ${active || last ? 'bg-naranja text-azul-ink' : 'bg-niebla text-azul'}`}>
-                        <p.Icon size={20} />
-                      </span>
+                  <div className="relative isolate">
+                    {last && (
+                      <motion.div
+                        aria-hidden="true"
+                        className="pointer-events-none absolute -inset-10 rounded-[3rem] md:-inset-14"
+                        style={{
+                          opacity: immersion,
+                          background: 'radial-gradient(ellipse at center, rgba(215,129,51,0.38) 0%, rgba(215,129,51,0.14) 45%, transparent 72%)',
+                        }}
+                      />
+                    )}
+                    <div className={`relative rounded-3xl border-2 p-7 transition-[transform,border-color,box-shadow] duration-300 motion-safe:hover:-translate-y-2 hover:shadow-[0_22px_55px_rgba(215,129,51,0.2)] ${
+                      active
+                        ? 'border-naranja shadow-[0_18px_50px_rgba(215,129,51,0.26),0_0_0_4px_rgba(215,129,51,0.08)]'
+                        : 'border-transparent shadow-[0_14px_40px_rgba(44,49,89,0.08)]'
+                    } ${last ? 'bg-azul text-white' : 'bg-white'}`}>
+                      <div className={`flex items-center gap-4 ${right ? '' : 'md:flex-row-reverse'}`}>
+                        <span className={`display text-6xl font-black transition-colors duration-300 ${active || last ? 'text-naranja' : 'text-durazno'}`}>{p.n}</span>
+                        <span className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-colors duration-300 ${active || last ? 'bg-naranja text-azul-ink' : 'bg-niebla text-azul'}`}>
+                          <p.Icon size={20} />
+                        </span>
+                      </div>
+                      <h3 className="mt-4 text-[22px] font-extrabold">{p.t}</h3>
+                      <p className={`mt-2 text-[15px] leading-relaxed ${last ? 'text-white/75' : 'text-azul/70'}`}>{p.d}</p>
                     </div>
-                    <h3 className="mt-4 text-[22px] font-extrabold">{p.t}</h3>
-                    <p className={`mt-2 text-[15px] leading-relaxed ${last ? 'text-white/75' : 'text-azul/70'}`}>{p.d}</p>
                   </div>
                 </motion.li>
               );
