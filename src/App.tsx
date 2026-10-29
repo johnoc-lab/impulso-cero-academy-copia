@@ -27,8 +27,6 @@ import {
   X,
   Target,
   Eye,
-  Pause,
-  Play,
 } from 'lucide-react';
 import Intro from './Intro';
 import { Orbits, Kicker } from './Orbits';
@@ -1008,32 +1006,19 @@ function Nosotros() {
 function AliadosMarquee({ aliados }: { aliados: Aliado[] }) {
   const reduceMotion = useReducedMotion();
   const x = useMotionValue('0%');
-  const animation = useRef<ReturnType<typeof animate> | null>(null);
-  const [paused, setPaused] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const [focused, setFocused] = useState(false);
   const canAnimate = aliados.length > 1 && !reduceMotion;
 
   useEffect(() => {
     x.set('0%');
     if (!canAnimate) return;
 
-    const controls = animate(x, ['0%', '-50%'], {
+    const animation = animate(x, ['0%', '-50%'], {
       duration: Math.max(18, aliados.length * 6),
       repeat: Infinity,
       ease: 'linear',
     });
-    animation.current = controls;
-    return () => {
-      controls.stop();
-      animation.current = null;
-    };
+    return () => animation.stop();
   }, [x, canAnimate, aliados.length]);
-
-  useEffect(() => {
-    if (paused || hovered || focused) animation.current?.pause();
-    else animation.current?.play();
-  }, [paused, hovered, focused, canAnimate, aliados.length]);
 
   if (aliados.length === 0) return null;
 
@@ -1041,32 +1026,10 @@ function AliadosMarquee({ aliados }: { aliados: Aliado[] }) {
     <div
       role="region"
       aria-label="Marcas que nos respaldan"
-      className="mt-20 flex min-w-0 flex-col gap-8 border-t border-white/10 py-10 md:mt-24 md:flex-row md:items-center md:py-12"
+      className="mt-20 flex w-full min-w-0 flex-col items-center gap-8 border-t border-white/10 py-10 md:mt-24 md:py-12"
     >
-      <div className="flex shrink-0 items-center justify-between gap-4 md:flex-col md:items-start md:gap-2">
-        <span className="text-[14px] font-bold uppercase tracking-[0.2em] text-white/70">Con el respaldo de</span>
-        {canAnimate && (
-          <button
-            type="button"
-            aria-label={paused ? 'Reanudar movimiento de aliados' : 'Pausar movimiento de aliados'}
-            aria-pressed={paused}
-            onClick={() => setPaused(!paused)}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-[12px] font-semibold text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-          >
-            {paused ? <Play size={13} aria-hidden="true" /> : <Pause size={13} aria-hidden="true" />}
-            {paused ? 'Reanudar' : 'Pausar'}
-          </button>
-        )}
-      </div>
-      <div
-        className="min-w-0 flex-1 overflow-hidden py-3"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onFocusCapture={() => setFocused(true)}
-        onBlurCapture={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false);
-        }}
-      >
+      <span className="w-full text-center text-[14px] font-bold uppercase tracking-[0.2em] text-white/70">Con el respaldo de</span>
+      <div className="w-full min-w-0 overflow-hidden py-3">
         <motion.div
           className={canAnimate ? 'flex w-max min-w-[200%]' : 'w-full'}
           style={{ x }}
